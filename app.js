@@ -1,5 +1,33 @@
 const http = require('http');
-const backendServer = "http://"
+const zlib = require('zlib');
+
+const backendHost = "localhost"
+const backendPort = 9200
+
+const onResponseReceived = (requestData, responseData, response, buffer) => {
+    let httpData = {
+        "request" : {
+            "method" : requestData.req.method,
+            "path" : requestData.req.url,
+            "body" : requestData.body
+        },
+        "response" : {
+            "status" : responseData.res.statusCode,
+            "content" : responseData.body
+        }
+    };
+
+    if (responseData.res.statusCode >= 100 && responseData.res.statusCode < 400) {
+        console.log(httpData);
+    }
+    else {
+        console.error(httpData);
+    }
+    
+    response.writeHead(responseData.res.statusCode, responseData.res.headers);
+    response.write(buffer);
+    response.end();
+}
 
 const server = http.createServer((request, response) => {
 
@@ -17,49 +45,48 @@ const server = http.createServer((request, response) => {
         requestData.body.push(chunk);
     }).on('end', () => {
         // Request
-        requestData.body = Buffer.concat(requestData.body).toString();
+        let requestBody = Buffer.concat(requestData.body);
 
         const options = {
-            hostname: 'www.google.com',
-            port: 80,
+            hostname: backendHost,
+            port: backendPort,
             path: requestData.req.url,
             method: requestData.req.method,
-            headers: requestData.req.headers
+            headers: requestData.req.headers,
+            encoding: null
         };
 
         const req = http.request(options, (res) => {
             res.on('data', (chunk) => {
-                responseData.body.push(chunk);                
+                responseData.body.push(chunk);
             });
+
             res.on('end', () => {
+               
                 // Response
-                responseData.body = Buffer.concat(responseData.body).toString();
+                let buffer = Buffer.concat(responseData.body);
                 responseData.res = res;
 
-                let httpData = {
-                    "request" : {
-                        "method" : requestData.req.method,
-                        "path" : requestData.req.url,
-                        "body" : requestData.body
-                    },
-                    "response" : {
-                        "status" : res.statusCode,
-                        "content" : responseData.body
-                    }
-                };
-
-                if (httpData.statusCode >= 200 && httpData.statusCode < 400) {
-                    console.log(httpData);
+                var encoding = res.headers['content-encoding'];
+                if (encoding == 'gzip') {
+                  zlib.gunzip(buffer, function(err, decoded) {
+                    responseData.body = decoded.toString();
+                    onResponseReceived(requestData, responseData, response, buffer)
+                  });
+                }
+                else if (encoding == 'deflate') {
+                  zlib.inflate(buffer, function(err, decoded) {
+                    responseData.body = decoded.toString();
+                    onResponseReceived(requestData, responseData, response, buffer)
+                  })
                 }
                 else {
-                    console.error(httpData);
+                    onResponseReceived(requestData, responseData, response, buffer)
                 }
-
-                
-                response.end();        
             });
           });
 
+          req.write(requestBody);
           req.end();
     });
     
