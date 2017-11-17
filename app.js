@@ -5,15 +5,23 @@ const backendHost = "localhost"
 const backendPort = 9200
 
 const onResponseReceived = (requestData, responseData, response, buffer) => {
+    let responseContent = responseData.body.toString();
+
+    let isJson = responseData.res.headers["content-type"].startsWith("application/json");
+
+    if (isJson && responseContent && responseContent != "") {
+        responseContent = JSON.parse(responseContent);
+    }
+
     let httpData = {
         "request" : {
             "method" : requestData.req.method,
             "path" : requestData.req.url,
-            "body" : requestData.body
+            "body" : requestData.body.toString()
         },
         "response" : {
             "status" : responseData.res.statusCode,
-            "content" : responseData.body
+            "content" : responseContent
         }
     };
 
