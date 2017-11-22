@@ -15,7 +15,7 @@ export function onRequestReceived(request: IncomingMessage, contentBuffer: Buffe
 
     if (contentBuffer && contentBuffer.length > 0) {
         if (utils.isContentTypeJson(request.headers)) {
-            requestData.body = contentBuffer.toJSON();
+            requestData.body = JSON.parse(contentBuffer.toString());
         }
         else {
             requestData.body = contentBuffer.toString();
@@ -34,7 +34,7 @@ export function onResponseReceived(response: IncomingMessage, contentBuffer: Buf
 
     if (contentBuffer && contentBuffer.length > 0) {
         if (utils.isContentTypeJson(response.headers)) {
-            responseData.body = contentBuffer.toJSON();
+            responseData.body = JSON.parse(contentBuffer.toString());
         }
         else {
             responseData.body = contentBuffer.toString();

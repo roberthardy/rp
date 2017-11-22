@@ -1,10 +1,11 @@
 import * as http from "http";
+import * as zlib from "zlib";
 import { onRequestReceived, onResponseReceived } from './httpHandlers';
 import { HttpExchange } from "./models/HttpExchange";
 import { RequestOptions } from "https";
 
-const backendHost = "www.theworldsworstwebsiteever.com";
-const backendPort = 80;
+const backendHost = "localhost";
+const backendPort = 9200;
 
 let log : HttpExchange[] = [];
 
@@ -42,14 +43,31 @@ http.createServer((request, response) => {
 
             backendResponse.on("end", () => {
                 let responseBody = Buffer.concat(responseBodyBuffer);
-                
+
+                let encoding = backendResponse.headers['content-encoding'];
+                if (encoding == 'gzip') {
+                    zlib.gunzip(responseBody, function(err, decoded) {
+                    responseData.body = decoded.toString();
+                    onResponseReceived(backendResponse, responseBody)
+                  });
+                }
+                else if (encoding == 'deflate') {
+                    zlib.inflate(responseBody, function(err, decoded) {
+                    responseData.body = decoded.toString();
+                    onResponseReceived(backendResponse, responseBody)
+                  })
+                }
+                else {
+                    onResponseReceived(backendResponse, responseBody)
+                }
+
                 let responseData = onResponseReceived(backendResponse, responseBody);
 
                 exchange.response = responseData;
 
                 log.push(exchange);
 
-                if (responseData.status <= 200) {
+                if (responseData.status <= 300) {
                     console.log(exchange);
                 }
                 else {
