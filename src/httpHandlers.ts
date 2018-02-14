@@ -13,15 +13,18 @@ export function onRequestReceived(request: IncomingMessage, contentBuffer: Buffe
         path : request.url
     };
 
-    if (contentBuffer && contentBuffer.length > 0) {
-        if (utils.isContentTypeJson(request.headers)) {
-            requestData.body = JSON.parse(contentBuffer.toString());
-        }
-        else {
-            requestData.body = contentBuffer.toString();
-        }   
-    }
+    // Uncomment lines 18 to 24 and then comment out line 26 if you want parsed JSON object
+    // output to the console instead of raw text.
+    // if (contentBuffer && contentBuffer.length > 0) {
+    //     if (utils.isContentTypeJson(request.headers)) {
+    //         requestData.body = JSON.parse(contentBuffer.toString());
+    //     }
+    //     else {
+    //     }   
+    // }
 
+    requestData.body = contentBuffer.toString();
+    
     return requestData;
 }
 
