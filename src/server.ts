@@ -1,87 +1,53 @@
 import * as http from "http";
-import * as zlib from "zlib";
-import { onRequestReceived, onResponseReceived } from './httpHandlers';
-import { HttpExchange } from "./models/HttpExchange";
-import { RequestOptions } from "https";
+import * as connect from "connect";
+import * as querystring from "querystring";
+import { createTrace } from "./trafficTrace";
+import { IncomingMessage, ServerResponse } from "http";
 
-const backendHost = "localhost";
-const backendPort = 9200;
+const target = 'http://localhost:8082';
+const trace = createTrace(target);
 
-let log : HttpExchange[] = [];
+// Reverse proxy
+const reverseProxy = connect();
+reverseProxy.use(trace.middleware);
+http.createServer(reverseProxy).listen(8080);
 
-http.createServer((request, response) => {
+// Inspector UI
+const ui = connect();
+ui.use("/traffic", function(req: IncomingMessage, res: ServerResponse) {
+    res.setHeader('Content-Type', 'application/json');
+    res.writeHead(200);
+    res.end(JSON.stringify(trace.traffic));
+});
+http.createServer(ui).listen(8081);
+
+// Echo server
+http.createServer(function(request, response) {
+    let urlParts = request.url.split("?");
     
-    let requestBodyBuffer : any[] = [];
-    request.on("data", (requestChunk) => {
-        requestBodyBuffer.push(requestChunk);
-    });
-    request.on("end", () => {
-        let exchange : HttpExchange = new HttpExchange();
+    let returnResponse = () => {
+        response.setHeader('Content-Type', 'text/plain');
+        response.writeHead(200);
+        request.pipe(response);
+    };
 
-        let requestBody = Buffer.concat(requestBodyBuffer);
+    if (urlParts.length > 1) {
+        const parameters = querystring.parse(urlParts[1]);
 
-        let requestData = onRequestReceived(request, requestBody);
-        exchange.request = requestData;
+        if (parameters.d) {
+            response.setHeader('d', parameters.d);
+        }
+    
+        if (parameters.t) {
+            response.setHeader('t', parameters.t);
+            setTimeout(returnResponse, parameters.t)
+        }
+        else {
+            returnResponse();
+        }
+        return;
+    }
 
-        request.headers["host"] = backendHost;
+    returnResponse();
 
-        let requestOptions : http.RequestOptions = {
-            hostname: backendHost,
-            host: backendHost,
-            port: backendPort,
-            path: request.url,
-            method: request.method,
-            headers: request.headers
-        };
-
-        const backendRequest = http.request(requestOptions, (backendResponse) => {
-            let responseBodyBuffer : any[] = [];
-
-            backendResponse.on("data", (responseChunk) => {
-                responseBodyBuffer.push(responseChunk);
-            });
-
-            backendResponse.on("end", () => {
-                let responseBody = Buffer.concat(responseBodyBuffer);
-
-                let encoding = backendResponse.headers['content-encoding'];
-                if (encoding == 'gzip') {
-                    zlib.gunzip(responseBody, function(err, decoded) {
-                    responseData.body = decoded.toString();
-                    onResponseReceived(backendResponse, responseBody)
-                  });
-                }
-                else if (encoding == 'deflate') {
-                    zlib.inflate(responseBody, function(err, decoded) {
-                    responseData.body = decoded.toString();
-                    onResponseReceived(backendResponse, responseBody)
-                  })
-                }
-                else {
-                    onResponseReceived(backendResponse, responseBody)
-                }
-
-                let responseData = onResponseReceived(backendResponse, responseBody);
-
-                exchange.response = responseData;
-
-                log.push(exchange);
-
-                if (responseData.status <= 300) {
-                    console.log(exchange);
-                }
-                else {
-                    console.error(exchange);
-                }
-                
-                response.writeHead(responseData.status);
-                response.write(responseBody);
-                response.end();
-            });
-        });
-
-        backendRequest.write(requestBody);
-        backendRequest.end();
-    });
-
-}).listen(8080);
+}).listen(8082);

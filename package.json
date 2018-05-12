@@ -15,11 +15,19 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "http-proxy": "^1.17.0"
+  },
   "devDependencies": {
+    "@types/connect": "^3.4.32",
+    "@types/http-proxy": "^1.16.1",
     "@types/node": "^8.0.53",
     "concurrently": "^3.5.0",
-    "nodemon": "^1.12.1",
-    "typescript": "^2.6.1"
+    "connect": "^3.6.6",
+    "nodemon": "^1.17.5",
+    "ts-loader": "^4.4.1",
+    "typescript": "^2.9.2",
+    "webpack": "^4.12.1",
+    "webpack-command": "^0.2.1"
   }
 }
