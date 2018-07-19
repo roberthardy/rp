@@ -1,10 +1,20 @@
 import * as http from "http";
 import * as connect from "connect";
-import * as querystring from "querystring";
 import { createTrace } from "./trafficTrace";
 import { IncomingMessage, ServerResponse } from "http";
+import * as minimist from "minimist";
 
-const target = 'http://localhost:8082';
+// Parse command line args.
+let argv = minimist(process.argv.slice(2));
+if (argv._.length < 1 && !argv._[0]){
+    printUsage();
+    process.exit(1);
+}
+
+let target: string = argv._[0];
+
+console.log(`Intercepting traffic for ${target}`);
+
 const trace = createTrace(target);
 
 // Reverse proxy
@@ -21,33 +31,6 @@ ui.use("/traffic", function(req: IncomingMessage, res: ServerResponse) {
 });
 http.createServer(ui).listen(8081);
 
-// Echo server
-http.createServer(function(request, response) {
-    let urlParts = request.url.split("?");
-    
-    let returnResponse = () => {
-        response.setHeader('Content-Type', 'text/plain');
-        response.writeHead(200);
-        request.pipe(response);
-    };
-
-    if (urlParts.length > 1) {
-        const parameters = querystring.parse(urlParts[1]);
-
-        if (parameters.d) {
-            response.setHeader('d', parameters.d);
-        }
-    
-        if (parameters.t) {
-            response.setHeader('t', parameters.t);
-            setTimeout(returnResponse, parameters.t)
-        }
-        else {
-            returnResponse();
-        }
-        return;
-    }
-
-    returnResponse();
-
-}).listen(8082);
+function printUsage() {
+    console.error("usage: node server.js <target>");
+}

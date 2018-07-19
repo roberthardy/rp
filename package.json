@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build && npm run watch",
     "serve": "nodemon",
+    "echo-server": "npm run build && node dist/echoServer.js",
     "build": "npm run build-ts",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
@@ -16,11 +17,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "http-proxy": "^1.17.0"
+    "http-proxy": "^1.17.0",
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "@types/connect": "^3.4.32",
     "@types/http-proxy": "^1.16.1",
+    "@types/minimist": "^1.2.0",
     "@types/node": "^8.0.53",
     "concurrently": "^3.5.0",
     "connect": "^3.6.6",
