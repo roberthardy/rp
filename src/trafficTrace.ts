@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
 import * as httpProxy from "http-proxy";
-import { HandleFunction } from "connect";
+import { HandleFunction, NextFunction } from "connect";
 import { HttpExchange } from "./models/HttpExchange";
 import { ResponseData } from "./models/ResponseData";
 import { RequestData } from "./models/RequestData";
@@ -22,7 +22,7 @@ class TrafficTrace {
             changeOrigin: true
         });
 
-        this.middleware = function (req: IncomingMessage & IIdentifyable, res: ServerResponse) {
+        this.middleware = function (req: IncomingMessage & IIdentifyable, res: ServerResponse, next: NextFunction) {
             let exchange : HttpExchange = new HttpExchange();
         
             let requestBodyBuffer : any[] = [];

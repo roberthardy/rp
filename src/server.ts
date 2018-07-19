@@ -19,6 +19,18 @@ const trace = createTrace(target);
 
 // Reverse proxy
 const reverseProxy = connect();
+reverseProxy.use(function(req: IncomingMessage, res: ServerResponse, next: connect.NextFunction) {
+    if (req.url == "/kill") {
+        res.setHeader('Content-Type', 'text/plain');
+        res.writeHead(200);
+        res.end("Goodbye");
+        console.log("Received kill command");
+        process.exit();
+    }
+    else
+        next();
+});
+
 reverseProxy.use(trace.middleware);
 http.createServer(reverseProxy).listen(8080);
 
@@ -32,5 +44,5 @@ ui.use("/traffic", function(req: IncomingMessage, res: ServerResponse) {
 http.createServer(ui).listen(8081);
 
 function printUsage() {
-    console.error("usage: node server.js <target>");
+    console.error("usage: node dist/server.js <target>");
 }

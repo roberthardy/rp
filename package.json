@@ -5,7 +5,7 @@
   "repository": "https://github.com/roberthardy/rp",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && node dist/traceTest.js",
     "start": "npm run build && npm run watch",
     "serve": "nodemon",
     "echo-server": "npm run build && node dist/echoServer.js",
