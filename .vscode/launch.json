@@ -7,7 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Debug trace test",
+            "program": "${workspaceFolder}/dist/test/traceTest.js",
+            "preLaunchTask": "npm: build"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug reverse proxy",
             "program": "${workspaceFolder}/dist/server.js",
             "args": [
                 "http://localhost:8082"
