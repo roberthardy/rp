@@ -1,4 +1,5 @@
-import { IncomingHttpHeaders } from "http";
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "http";
+import {HandleFunction, NextFunction} from "connect";
 
 export function isContentTypeJson(headers : IncomingHttpHeaders) : boolean {
     if (headers["content-type"]
@@ -9,3 +10,14 @@ export function isContentTypeJson(headers : IncomingHttpHeaders) : boolean {
     
     return false;
 }
+export function checkForKillCommand(req: IncomingMessage, res: ServerResponse, next: NextFunction) {
+    if (req.url == "/kill") {
+        res.setHeader('Content-Type', 'text/plain');
+        res.writeHead(200);
+        res.end("Goodbye");
+        console.log("Received kill command");
+        process.exit();
+    }
+    else
+        next();
+};

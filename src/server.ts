@@ -1,17 +1,25 @@
 import * as http from "http";
 import * as connect from "connect";
 import { createTrace } from "./trafficTrace";
+import { checkForKillCommand } from "./utils";
+import { launchEchoServer } from "./test/echoServer";
 import { IncomingMessage, ServerResponse } from "http";
 import * as minimist from "minimist";
 
+const echoServerPort = 8082;
+let target: string;
+
 // Parse command line args.
 let argv = minimist(process.argv.slice(2));
-if (argv._.length < 1 && !argv._[0]){
-    printUsage();
-    process.exit(1);
+if (argv._.length < 1 && !argv._[0]) {
+    
+    // No target specified so launch the echo server.
+    target = `http://localhost:${echoServerPort}`;
+    launchEchoServer(echoServerPort);
 }
-
-let target: string = argv._[0];
+else {
+    target = argv._[0];
+}
 
 console.log(`Intercepting traffic for ${target}`);
 
@@ -19,18 +27,7 @@ const trace = createTrace(target);
 
 // Reverse proxy
 const reverseProxy = connect();
-reverseProxy.use(function(req: IncomingMessage, res: ServerResponse, next: connect.NextFunction) {
-    if (req.url == "/kill") {
-        res.setHeader('Content-Type', 'text/plain');
-        res.writeHead(200);
-        res.end("Goodbye");
-        console.log("Received kill command");
-        process.exit();
-    }
-    else
-        next();
-});
-
+reverseProxy.use(checkForKillCommand);
 reverseProxy.use(trace.middleware);
 http.createServer(reverseProxy).listen(8080);
 

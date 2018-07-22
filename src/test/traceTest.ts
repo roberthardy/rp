@@ -1,15 +1,28 @@
-import {spawn, fork, exec} from "child_process"
+import {spawn, fork, exec, ChildProcess} from "child_process"
+import * as path from "path";
+import * as axios from "axios";
 
 testOverlappingRequests();
 
 function testOverlappingRequests() {
 
-    var child = exec('node ./server.js');
-    child.stdout.on('data', function(data) {
-        console.log('stdout: ' + data);
+    let command: string;
+
+    // Launch reverse proxy with echo server.
+    const reverseProxyPath = path.join(__dirname, "../", "server.js");
+    command = `node ${reverseProxyPath}`;
+    let reverseProxyProcess = exec(command, console.error);
+    assignEventHandlers(reverseProxyProcess);
+}
+
+function assignEventHandlers(childProcess: ChildProcess) {
+    childProcess.stdout.on('data', function(data) {
+        console.log(data);
     });
-
-    const reverseProxy = fork('server.js', ["localhost:8082"]);
-
-    console.log("Test");
+    childProcess.stderr.on('data', function(data) {
+        console.error(data);
+    });
+    childProcess.on('close', function(code) {
+        console.log('exited with: ' + code);
+    });
 }

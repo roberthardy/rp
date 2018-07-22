@@ -16,10 +16,7 @@
             "request": "launch",
             "name": "Debug reverse proxy",
             "program": "${workspaceFolder}/dist/server.js",
-            "args": [
-                "http://localhost:8082"
-            ],
-            "preLaunchTask": "npm: echo-server",
+            "preLaunchTask": "npm: build",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]
