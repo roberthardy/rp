@@ -3,6 +3,7 @@ import * as connect from "connect";
 import * as querystring from "querystring";
 import { IncomingMessage, ServerResponse } from "http";
 import { checkForKillCommand } from "../utils";
+import { NextFunction } from "connect";
 
 /**
  * Starts an echo server for development and debugging.
@@ -14,7 +15,7 @@ export function launchEchoServer(echoServerPort: number) {
     echoServer.use(checkForKillCommand);
     echoServer.use(function(req: IncomingMessage, res: ServerResponse) {
         let urlParts = req.url.split("?");
-        
+
         let returnResponse = () => {
             res.setHeader('Content-Type', 'text/plain');
             res.writeHead(200);
@@ -42,7 +43,6 @@ export function launchEchoServer(echoServerPort: number) {
 
     });
 
-    // Echo server for development and debugging.
     http.createServer(echoServer).listen(echoServerPort);
     console.log("Echo server listening on " + echoServerPort);
 };

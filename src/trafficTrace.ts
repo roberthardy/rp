@@ -22,7 +22,8 @@ class TrafficTrace {
             changeOrigin: true
         });
 
-        this.middleware = function (req: IncomingMessage & IIdentifyable, res: ServerResponse, next: NextFunction) {
+        this.middleware = function (req: IncomingMessage & IIdentifyable, res: ServerResponse) {
+
             let exchange : HttpExchange = new HttpExchange();
         
             let requestBodyBuffer : any[] = [];
@@ -51,7 +52,6 @@ class TrafficTrace {
             proxyRes.on('end', function () {
                 let responseBody = Buffer.concat(body);
                 self.traffic[req.id].response = onResponseReceived(res, responseBody);
-                console.log(self.traffic[req.id]);
             });
         });
     }

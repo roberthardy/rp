@@ -10,6 +10,10 @@ export function isContentTypeJson(headers : IncomingHttpHeaders) : boolean {
     
     return false;
 }
+
+/**
+ * A middleware that terminates the server process if a request is sent to /kill
+ */
 export function checkForKillCommand(req: IncomingMessage, res: ServerResponse, next: NextFunction) {
     if (req.url == "/kill") {
         res.setHeader('Content-Type', 'text/plain');
