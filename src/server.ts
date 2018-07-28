@@ -1,8 +1,8 @@
 import * as http from "http";
 import * as connect from "connect";
-import { createTrace } from "./trafficTrace";
-import { checkForKillCommand } from "./utils";
-import { launchEchoServer } from "./test/echoServer";
+import { createTrace } from "./reverseProxy/trafficTrace";
+import { checkForKillCommand } from "./reverseProxy/utils";
+import { launchEchoServer } from "./reverseProxy/test/echoServer";
 import { IncomingMessage, ServerResponse } from "http";
 import * as minimist from "minimist";
 
