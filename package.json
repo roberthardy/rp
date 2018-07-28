@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "Debugging reverse proxy",
   "repository": "https://github.com/roberthardy/rp",
-  "main": "dist/server.js",
+  "private": true,
   "scripts": {
     "test": "npm run build && node dist/test/traceTest.js",
     "start": "npm run build && npm run watch",
     "serve": "nodemon",
     "echo-server": "npm run build && node dist/test/echoServer.js",
-    "build": "npm run build-ts",
+    "build": "webpack",
+    "build-test": "npm run build-ts",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "watch": "concurrently -k -p \"{name}\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold\" \"npm run watch-ts\" \"npm run serve\""
@@ -31,7 +32,7 @@
     "nodemon": "^1.17.5",
     "ts-loader": "^4.4.1",
     "typescript": "^2.9.2",
-    "webpack": "^4.12.1",
-    "webpack-command": "^0.2.1"
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0"
   }
 }

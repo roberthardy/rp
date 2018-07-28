@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Debug trace test",
             "program": "${workspaceFolder}/dist/test/traceTest.js",
-            "preLaunchTask": "npm: build"
+            "preLaunchTask": "npm: build-test"
         },
         {
             "type": "node",
