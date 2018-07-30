@@ -1,5 +1,7 @@
 import * as http from "http";
 import * as connect from "connect";
+import express = require('express');
+import * as path from "path";
 import { createTrace } from "./reverseProxy/trafficTrace";
 import { checkForKillCommand } from "./reverseProxy/utils";
 import { launchEchoServer } from "./reverseProxy/test/echoServer";
@@ -32,13 +34,19 @@ reverseProxy.use(trace.middleware);
 http.createServer(reverseProxy).listen(8080);
 
 // Inspector UI
-const ui = connect();
-ui.use("/traffic", function(req: IncomingMessage, res: ServerResponse) {
+const ui = express();
+ui.listen(8081, () => {console.log("Inspector UI listening on 8081")});
+ui.get("/traffic", (req, res) => {
+    console.log(__dirname);
     res.setHeader('Content-Type', 'application/json');
     res.writeHead(200);
     res.end(JSON.stringify(trace.traffic));
 });
-http.createServer(ui).listen(8081);
+
+ui.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'index.html'));
+});
+ui.use(express.static(__dirname));
 
 function printUsage() {
     console.error("usage: node dist/server.js <target>");

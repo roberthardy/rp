@@ -1,5 +1,6 @@
 const path = require('path'),
-    HtmlWebpackPlugin = require('html-webpack-plugin');
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    nodeExternals = require('webpack-node-externals');
 
 module.exports = function(env, argv) {
     const base = {
@@ -24,12 +25,16 @@ module.exports = function(env, argv) {
             publicPath: '/'
         },
         plugins: [
-            new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'index.html') })
-        ]
+            new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'ui', 'index.html') })
+        ],
+        node: {
+            __dirname: false
+        }
     };
 
     if (env.platform === 'server') {
         base.target = 'node';
+        base.externals = [nodeExternals()];
     }
 
     if (env.platform === 'client') {
