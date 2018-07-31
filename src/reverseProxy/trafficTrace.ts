@@ -1,9 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import * as httpProxy from "http-proxy";
 import { HandleFunction, NextFunction } from "connect";
-import { HttpExchange } from "./models/HttpExchange";
-import { ResponseData } from "./models/ResponseData";
-import { RequestData } from "./models/RequestData";
+import { RequestData, ResponseData, HttpExchange } from "../common/models";
 
 interface IIdentifyable {
     id : number
