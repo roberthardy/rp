@@ -1,13 +1,18 @@
-import {Component} from "react";
-import axios from "axios";
+import * as React from "react";import axios from "axios";
 import { RequestData, ResponseData, HttpExchange } from "../../common/models";
 
-class TrafficTraceContainer extends Component<{[id:number]:HttpExchange }> {
+export class TrafficTraceContainer extends React.Component<{}, {[id:number]:HttpExchange}> {
     constructor(props:{ [id:number]:HttpExchange }) {
         super(props);
+        this.state = {};
     }
 
     async componentDidMount() {
         const traffic = await axios.get("/traffic");
+        this.setState(traffic.data);
+    }
+
+    render() {
+        return <p>Traffic trace container</p>;
     }
 }
