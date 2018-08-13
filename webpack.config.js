@@ -3,7 +3,7 @@ const path = require('path'),
     nodeExternals = require('webpack-node-externals');
 
 module.exports = function(env, argv) {
-    const base = {
+    const config = {
         mode: 'development',
         entry : './src/server.ts',
         devtool: 'inline-source-map',
@@ -11,7 +11,7 @@ module.exports = function(env, argv) {
             rules: [
                 {
                     test: /\.tsx?$/,
-                    use: 'ts-loader',
+                    use: 'awesome-typescript-loader',
                     exclude: /node_modules/
                 }
             ]
@@ -33,8 +33,8 @@ module.exports = function(env, argv) {
     };
 
     if (env.platform === 'server') {
-        base.target = 'node';
-        base.externals = [nodeExternals()];
+        config.target = 'node';
+        config.externals = [nodeExternals()];
     }
 
     if (env.platform === 'client') {
@@ -42,5 +42,5 @@ module.exports = function(env, argv) {
         base.output.filename = './ui/client.js';
     }
 
-    return base;
+    return config;
 }
