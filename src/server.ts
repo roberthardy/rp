@@ -9,6 +9,9 @@ import { IncomingMessage, ServerResponse } from "http";
 import * as minimist from "minimist";
 
 const echoServerPort = 8082;
+const reverseProxyPort = 8081;
+const inspectorUiPort = 8080;
+
 let target: string;
 
 // Parse command line args.
@@ -31,11 +34,11 @@ const trace = createTrace(target);
 const reverseProxy = connect();
 reverseProxy.use(checkForKillCommand);
 reverseProxy.use(trace.middleware);
-http.createServer(reverseProxy).listen(8081);
+http.createServer(reverseProxy).listen(reverseProxyPort);
 
 // Inspector UI
 const ui = express();
-ui.listen(8080, () => {console.log("Inspector UI listening on 8081")});
+ui.listen(inspectorUiPort, () => {console.log(`Inspector UI listening on ${inspectorUiPort}`)});
 ui.get("/traffic", (req, res) => {
     console.log(__dirname);
     res.setHeader('Content-Type', 'application/json');
