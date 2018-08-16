@@ -38,8 +38,8 @@ module.exports = function(env, argv) {
     }
 
     if (env.platform === 'client') {
-        base.entry = './src/ui/App.tsx';
-        base.output.filename = './ui/client.js';
+        config.entry = './src/ui/index.tsx';
+        config.output.filename = './ui/index.js';
     }
 
     return config;
