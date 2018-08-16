@@ -31,11 +31,11 @@ const trace = createTrace(target);
 const reverseProxy = connect();
 reverseProxy.use(checkForKillCommand);
 reverseProxy.use(trace.middleware);
-http.createServer(reverseProxy).listen(8080);
+http.createServer(reverseProxy).listen(8081);
 
 // Inspector UI
 const ui = express();
-ui.listen(8081, () => {console.log("Inspector UI listening on 8081")});
+ui.listen(8080, () => {console.log("Inspector UI listening on 8081")});
 ui.get("/traffic", (req, res) => {
     console.log(__dirname);
     res.setHeader('Content-Type', 'application/json');
