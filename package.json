@@ -7,9 +7,9 @@
   "scripts": {
     "test": "npm run build && node dist/test/traceTest.js",
     "start": "node dist/server.js",
-    "serve": "nodemon",
+    "watch": "nodemon -w dist --ignore dist/ui dist/server.js",
     "echo-server": "npm run build-reverse-proxy && node dist/test/echoServer.js",
-    "build": "webpack --config-name=reverse-proxy",
+    "build-reverse-proxy": "webpack --config-name=reverse-proxy",
     "build-inspector": "webpack --config-name=inspector"
   },
   "author": "",

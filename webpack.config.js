@@ -50,7 +50,7 @@ module.exports = [
         output: {
             filename: 'index.js',
             path: path.resolve(process.cwd(), 'dist', 'ui'),
-            publicPath: '/'
+            publicPath: '/ui'
         },
         plugins: [
             new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'ui', 'index.html') })

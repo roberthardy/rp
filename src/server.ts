@@ -47,7 +47,7 @@ ui.get("/traffic", (req, res) => {
 });
 
 ui.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'ui', 'index.html'));
 });
 ui.use(express.static(__dirname));
 
