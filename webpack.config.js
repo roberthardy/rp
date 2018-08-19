@@ -2,8 +2,9 @@ const path = require('path'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     nodeExternals = require('webpack-node-externals');
 
-module.exports = function(env, argv) {
-    const config = {
+module.exports = [
+    {
+        name: 'reverse-proxy',
         mode: 'development',
         entry : './src/server.ts',
         devtool: 'inline-source-map',
@@ -22,25 +23,37 @@ module.exports = function(env, argv) {
         output: {
             filename: 'server.js',
             path: path.resolve(process.cwd(), 'dist'),
+        },
+        node: {
+            __dirname: false
+        },
+        target: 'node',
+        externals: [nodeExternals()]
+    },
+    {
+        name: 'inspector',
+        mode: 'development',
+        entry : './src/ui/index.tsx',
+        devtool: 'inline-source-map',
+        module: {
+            rules: [
+                {
+                    test: /\.tsx?$/,
+                    use: 'awesome-typescript-loader',
+                    exclude: /node_modules/
+                }
+            ]
+        },
+        resolve: {
+            extensions: [ '.tsx', '.ts', '.js' ]
+        },
+        output: {
+            filename: 'index.js',
+            path: path.resolve(process.cwd(), 'dist', 'ui'),
             publicPath: '/'
         },
         plugins: [
             new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'ui', 'index.html') })
-        ],
-        node: {
-            __dirname: false
-        }
-    };
-
-    if (env.platform === 'server') {
-        config.target = 'node';
-        config.externals = [nodeExternals()];
+        ]
     }
-
-    if (env.platform === 'client') {
-        config.entry = './src/ui/index.tsx';
-        config.output.filename = './ui/index.js';
-    }
-
-    return config;
-}
+];

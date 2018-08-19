@@ -6,14 +6,11 @@
   "private": true,
   "scripts": {
     "test": "npm run build && node dist/test/traceTest.js",
-    "start": "npm run build && npm run watch",
+    "start": "node dist/server.js",
     "serve": "nodemon",
-    "echo-server": "npm run build && node dist/test/echoServer.js",
-    "build": "webpack --env.platform=server && webpack --env.platform=client",
-    "build-test": "npm run build-ts",
-    "build-ts": "tsc",
-    "watch-ts": "tsc -w",
-    "watch": "concurrently -k -p \"{name}\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold\" \"npm run watch-ts\" \"npm run serve\""
+    "echo-server": "npm run build-reverse-proxy && node dist/test/echoServer.js",
+    "build": "webpack --config-name=reverse-proxy",
+    "build-inspector": "webpack --config-name=inspector"
   },
   "author": "",
   "license": "ISC",
