@@ -8,9 +8,11 @@
     "test": "npm run build-test && node dist/reverseProxy/test/traceTest.js",
     "start": "node dist/server.js",
     "watch": "nodemon -w dist --ignore dist/ui dist/server.js -- -i",
+    "webpack-dev-server": "webpack-dev-server --open",
+    "watch-ui": "npm run webpack-dev-server -- --config=webpack.config.ui.js",
     "echo-server": "npm run build-reverse-proxy && node dist/reverseProxy/test/echoServer.js",
-    "build-reverse-proxy": "webpack --config-name=reverse-proxy",
-    "build-inspector": "webpack --config-name=inspector",
+    "build-reverse-proxy": "webpack --config=webpack.config.js",
+    "build-inspector": "webpack --config=webpack.config.ui.js",
     "build-test": "tsc"
   },
   "author": "",
@@ -39,6 +41,7 @@
     "typescript": "^3.0.1",
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5",
     "webpack-node-externals": "^1.7.2"
   }
 }
