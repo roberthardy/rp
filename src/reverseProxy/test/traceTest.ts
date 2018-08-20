@@ -3,6 +3,8 @@ import * as path from "path";
 import axios, { AxiosPromise } from "axios";
 import * as querystring from "querystring";
 
+const reverseProxyPort = 8082;
+
 class TestStep {
     data: string;
     waitTime: number;
@@ -15,7 +17,7 @@ class TestStep {
     }
 
     getUrl() {
-        return `http://localhost:8080?t=${this.waitTime}&d=${this.data}`;
+        return `http://localhost:${reverseProxyPort}?t=${this.waitTime}&d=${this.data}`;
     }
 }
 
@@ -26,7 +28,7 @@ async function testOverlappingRequests() {
     let command: string;
 
     // Launch reverse proxy with echo server.
-    const reverseProxyPath = path.join(__dirname, "../", "server.js");
+    const reverseProxyPath = path.join(__dirname, "../../", "server.js");
     command = `node ${reverseProxyPath}`;
     let reverseProxyProcess = exec(command, console.error);
     assignEventHandlers(reverseProxyProcess);
@@ -68,7 +70,7 @@ async function testOverlappingRequests() {
         
         // Allow some time for all responses to be returned before killing the server.
         // TODO: Do this in a less hacky way.
-        setTimeout(async function() {await axios.get("http://localhost:8080/kill")}, 600);
+        setTimeout(async function() {await axios.get(`http://localhost:${reverseProxyPort}/kill`)}, 600);
 
     }).catch(console.error);
 }
