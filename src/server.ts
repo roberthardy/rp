@@ -8,14 +8,16 @@ import { launchEchoServer } from "./reverseProxy/test/echoServer";
 import { IncomingMessage, ServerResponse } from "http";
 import * as minimist from "minimist";
 
-const echoServerPort = 8082;
-const reverseProxyPort = 8081;
+const echoServerPort = 8083;
+const reverseProxyPort = 8082;
+const trafficApiPort = 8081;
 const inspectorUiPort = 8080;
 
 let target: string;
+let disableInspector: boolean = false;
 
 // Parse command line args.
-let argv = minimist(process.argv.slice(2));
+const argv = minimist(process.argv.slice(2));
 if (argv._.length < 1 && !argv._[0]) {
     
     // No target specified so launch the echo server.
@@ -23,7 +25,11 @@ if (argv._.length < 1 && !argv._[0]) {
     launchEchoServer(echoServerPort);
 }
 else {
-    target = argv._[0];
+    target = argv._[0];    
+}
+
+if (argv.i) {
+    disableInspector = argv.i;
 }
 
 console.log(`Intercepting traffic for ${target}`);
@@ -34,22 +40,29 @@ const trace = createTrace(target);
 const reverseProxy = connect();
 reverseProxy.use(checkForKillCommand);
 reverseProxy.use(trace.middleware);
-http.createServer(reverseProxy).listen(reverseProxyPort);
+http.createServer(reverseProxy).listen(reverseProxyPort,
+    () => {console.log(`Reverse proxy listening on ${reverseProxyPort}`)});
 
-// Inspector UI
-const ui = express();
-ui.listen(inspectorUiPort, () => {console.log(`Inspector UI listening on ${inspectorUiPort}`)});
-ui.get("/traffic", (req, res) => {
+const trafficApi = express();
+trafficApi.get("/traffic", (req, res) => {
     console.log(__dirname);
     res.setHeader('Content-Type', 'application/json');
     res.writeHead(200);
     res.end(JSON.stringify(trace.traffic));
 });
 
-ui.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'ui', 'index.html'));
-});
-ui.use(express.static(__dirname));
+// Inspector UI
+if (!disableInspector) {
+    trafficApi.get('/', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'ui', 'index.html'));
+    });
+    trafficApi.use(express.static(__dirname));
+}
+else {
+    console.log("Inspector UI disabled");
+}
+
+trafficApi.listen(trafficApiPort, () => {console.log(`Traffic API listening on ${trafficApiPort}`)});
 
 function printUsage() {
     console.error("usage: node dist/server.js <target>");

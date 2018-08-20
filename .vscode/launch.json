@@ -16,7 +16,10 @@
             "request": "launch",
             "name": "Debug reverse proxy",
             "program": "${workspaceFolder}/dist/server.js",
-            "preLaunchTask": "npm: build",
+            "args": [
+                "-i"
+            ],
+            "preLaunchTask": "npm: build-reverse-proxy",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]

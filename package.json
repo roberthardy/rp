@@ -5,9 +5,9 @@
   "repository": "https://github.com/roberthardy/rp",
   "private": true,
   "scripts": {
-    "test": "npm run build && node dist/test/traceTest.js",
+    "test": "npm run build-reverse-proxy && node dist/test/traceTest.js",
     "start": "node dist/server.js",
-    "watch": "nodemon -w dist --ignore dist/ui dist/server.js",
+    "watch": "nodemon -w dist --ignore dist/ui dist/server.js -- -i",
     "echo-server": "npm run build-reverse-proxy && node dist/test/echoServer.js",
     "build-reverse-proxy": "webpack --config-name=reverse-proxy",
     "build-inspector": "webpack --config-name=inspector"
