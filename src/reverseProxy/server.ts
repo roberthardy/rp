@@ -25,7 +25,7 @@ if (argv._.length < 1 && !argv._[0]) {
     launchEchoServer(echoServerPort);
 }
 else {
-    target = argv._[0];    
+    target = argv._[0];
 }
 
 if (argv.i) {

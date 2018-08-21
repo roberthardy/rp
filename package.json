@@ -13,7 +13,7 @@
     "echo-server": "npm run build-reverse-proxy && node dist/reverseProxy/test/echoServer.js",
     "build-reverse-proxy": "tsc --project src/reverseProxy",
     "build-inspector": "webpack",
-    "build-test": "tsc"
+    "build-test": "npm run build-reverse-proxy"
   },
   "author": "",
   "license": "ISC",
@@ -37,11 +37,10 @@
     "concurrently": "^3.5.0",
     "connect": "^3.6.6",
     "html-webpack-plugin": "^3.2.0",
-    "nodemon": "^1.17.5",
+    "nodemon": "^1.18.3",
     "typescript": "^3.0.1",
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-dev-server": "^3.1.5"
   }
 }
