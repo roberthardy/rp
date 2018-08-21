@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Debug trace test",
-            "program": "${workspaceFolder}/dist/test/traceTest.js",
+            "program": "${workspaceFolder}/dist/reverseProxy/test/traceTest.js",
             "preLaunchTask": "npm: build-test"
         },
         {
