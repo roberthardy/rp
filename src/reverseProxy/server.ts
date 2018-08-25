@@ -45,24 +45,28 @@ http.createServer(reverseProxy).listen(reverseProxyPort,
 
 const trafficApi = express();
 trafficApi.get("/traffic", (req, res) => {
-    console.log(__dirname);
     res.setHeader('Content-Type', 'application/json');
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
     res.writeHead(200);
     res.end(JSON.stringify(trace.traffic));
 });
+trafficApi.listen(trafficApiPort, () => {console.log(`Traffic API listening on ${trafficApiPort}`)});
 
 // Inspector UI
 if (!disableInspector) {
-    trafficApi.get('/', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'ui', 'index.html'));
+    const inspectorUi = express();
+    inspectorUi.get('/', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../', 'ui', 'index.html'));
     });
-    trafficApi.use(express.static(__dirname));
+    inspectorUi.use(express.static(path.resolve(__dirname, '../', 'ui')));
+    inspectorUi.listen(inspectorUiPort, () => {console.log(`Inspector UI listening on ${inspectorUiPort}`)});
 }
 else {
     console.log("Inspector UI disabled");
 }
 
-trafficApi.listen(trafficApiPort, () => {console.log(`Traffic API listening on ${trafficApiPort}`)});
 
 function printUsage() {
     console.error("usage: node dist/server.js <target>");

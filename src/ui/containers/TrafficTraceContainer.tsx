@@ -8,7 +8,7 @@ export class TrafficTraceContainer extends React.Component<{}, {[id:number]:Http
     }
 
     async componentDidMount() {
-        const traffic = await axios.get("/traffic");
+        const traffic = await axios.get("http://localhost:8081/traffic");
         this.setState(traffic.data);
     }
 

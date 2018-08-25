@@ -15,7 +15,7 @@
             "type": "node",
             "request": "launch",
             "name": "Debug reverse proxy",
-            "program": "${workspaceFolder}/dist/server.js",
+            "program": "${workspaceFolder}/dist/reverseProxy/server.js",
             "args": [
                 "-i"
             ],
