@@ -5,7 +5,6 @@ import * as path from "path";
 import { createTrace } from "./trafficTrace";
 import { checkForKillCommand } from "./utils";
 import { launchEchoServer } from "./test/echoServer";
-import { IncomingMessage, ServerResponse } from "http";
 import * as minimist from "minimist";
 
 const echoServerPort = 8083;
@@ -66,7 +65,6 @@ if (!disableInspector) {
 else {
     console.log("Inspector UI disabled");
 }
-
 
 function printUsage() {
     console.error("usage: node dist/server.js <target>");
