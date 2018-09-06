@@ -7,6 +7,7 @@
   "scripts": {
     "test": "npm run build-test && node dist/reverseProxy/test/traceTest.js",
     "start": "node dist/reverseProxy/server.js",
+    "start-dev": "concurrently npm:watch-*",
     "watch-reverse-proxy": "nodemon -w dist --ignore dist/ui dist/reverseProxy/server.js -- -i",
     "watch-ui": "npm run webpack-dev-server",
     "webpack-dev-server": "webpack-dev-server --open",
