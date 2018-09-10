@@ -28,7 +28,7 @@ async function testOverlappingRequests() {
     let command: string;
 
     // Launch reverse proxy with echo server.
-    const reverseProxyPath = path.join(__dirname, "../../", "server.js");
+    const reverseProxyPath = path.join(__dirname, "../", "server.js");
     command = `node ${reverseProxyPath}`;
     let reverseProxyProcess = exec(command, console.error);
     assignEventHandlers(reverseProxyProcess);

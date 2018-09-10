@@ -4,13 +4,13 @@ import { HandleFunction, NextFunction } from "connect";
 import { RequestData, ResponseData, HttpExchange } from "../common/models";
 
 interface IIdentifyable {
-    id : number
+    index : number
 }
 
 class TrafficTrace {
     readonly middleware: HandleFunction;
-    private currentId: number = 0;
-    traffic: { [id:number]:HttpExchange } = {};
+    private currentIndex: number = 0;
+    traffic: HttpExchange[] = [];
 
     constructor(target: string) {
         let self = this;
@@ -35,8 +35,8 @@ class TrafficTrace {
                 let requestData = onRequestReceived(req, requestBody);
                 exchange.request = requestData;
         
-                req.id = self.currentId++;
-                self.traffic[req.id] = exchange;
+                req.index = self.currentIndex++;
+                self.traffic[req.index] = exchange;
             });
         
            proxy.web(req, res);
@@ -49,7 +49,7 @@ class TrafficTrace {
             });
             proxyRes.on('end', function () {
                 let responseBody = Buffer.concat(body);
-                self.traffic[req.id].response = onResponseReceived(res, responseBody);
+                self.traffic[req.index].response = onResponseReceived(res, responseBody);
             });
         });
     }
