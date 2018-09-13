@@ -1,11 +1,25 @@
 import * as React from "react";
-import axios from "axios";
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux'
+import axios, { AxiosResponse } from "axios";
 import { RequestData, ResponseData, HttpExchange } from "../../common/models";
 import {HttpExchangeBox} from "../components/HttpExchangeBox";
 
-type Props = {exchanges:HttpExchange[]};
+interface Props {exchanges:HttpExchange[]};
+interface State {exchanges:HttpExchange[]};
 
-export class TrafficTraceContainer extends React.Component<Props, {exchanges:HttpExchange[]}> {
+export const loadTraffic = (state:State = {exchanges: []}, action: {type: string, response: HttpExchange[]}): State => {
+    switch (action.type) {
+        case "LOAD_TRAFFIC":
+            return {exchanges: action.response};
+        default:
+            return state;
+    }
+};
+
+export const fetch = () => {return {type:"LOAD_TRAFFIC", response: [new HttpExchange()]}};
+
+class TrafficTraceContainer extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {exchanges: []};
@@ -13,8 +27,7 @@ export class TrafficTraceContainer extends React.Component<Props, {exchanges:Htt
 
     async componentDidMount() {
         if (this.props.exchanges.length < 1) {
-            const traffic = await axios.get("http://localhost:8081/traffic");
-            this.setState({exchanges: traffic.data});
+            //const traffic = await axios.get("http://localhost:8081/traffic");
         }
     }
 
@@ -30,4 +43,14 @@ export class TrafficTraceContainer extends React.Component<Props, {exchanges:Htt
             </div>
         );
     }
-}
+};
+
+const mapStateToProps = (state: State) => ({
+    exchanges: state.exchanges
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
+    fetch: fetch,
+  }, dispatch);
+  
+export const TrafficTraceContainerConnected = connect(mapStateToProps, mapDispatchToProps)(TrafficTraceContainer);
