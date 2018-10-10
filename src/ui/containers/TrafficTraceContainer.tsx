@@ -1,70 +1,104 @@
 import * as React from "react";
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux'
+import { connect } from "react-redux";
+import {
+  bindActionCreators,
+  Reducer,
+  Dispatch,
+  AnyAction,
+  Action
+} from "redux";
 import axios, { AxiosResponse } from "axios";
 import { RequestData, ResponseData, HttpExchange } from "../../common/models";
-import {HttpExchangeBox} from "../components/HttpExchangeBox";
+import { HttpExchangeBox } from "../components/HttpExchangeBox";
+import { action } from "typesafe-actions";
 
-export interface Props {exchanges:HttpExchange[]};
-export interface State {exchanges:HttpExchange[]};
-export interface Action {type: string, response: HttpExchange[]};
+// Additional props for connected React components. This prop is passed by default with `connect()`
+export interface ConnectedReduxProps<A extends Action = AnyAction> {
+  dispatch: Dispatch<A>;
+}
+
+export interface PropsFromState {
+  exchanges: HttpExchange[];
+}
+export interface PropsFromDispatch {
+  fetchRequest: typeof fetchRequest;
+}
+export interface State {
+  exchanges: HttpExchange[];
+  isFetching: boolean;
+}
+
+type AllProps = PropsFromState & PropsFromDispatch & ConnectedReduxProps;
+
 // State
-const initialState:State = {exchanges: []};
+const initialState: State = { exchanges: [], isFetching: false };
 
-export const loadTraffic = (state:State = initialState, action: Action): State => {
-    switch (action.type) {
-        case "LOAD_TRAFFIC":
-            return {exchanges: action.response};
-        default:
-            return state;
-    }
+/**
+ * Reducer
+ */
+export const loadTraffic: Reducer<State> = (
+  state = initialState,
+  action
+): State => {
+  switch (action.type) {
+    case "FETCH_REQUEST":
+      return { ...state, isFetching: true };
+    case "FETCH_SUCESS":
+      return { ...state, exchanges: action.response, isFetching: false };
+    default:
+      return state;
+  }
 };
 
-export const fetch = () => {
-    let response:HttpExchange[] = [
-        {
-            request: {body: "abc", method: "POST", path: "/"},
-            response: {body: "def", status:200}
-        }
-    ];
-    return {
-        type:"LOAD_TRAFFIC",
-        response: response
-    }
-};
+export const fetchRequest = () => action("FETCH_REQUEST");
+export const fetchSuccess = (data: HttpExchange[]) =>
+  action("FETCH_SUCCESS", data);
 
-class TrafficTraceContainer extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = initialState;
-    }
+export function fetchTraffic() {
+  return (dispatch:Dispatch) => {
+    dispatch(fetchRequest());
+    return axios
+      .get("http://localhost:8081/traffic")
+      .then(response => response.data)
+      .then(data => dispatch(fetchSuccess(data)));
+  };
+}
 
-    async componentDidMount() {
-        if (this.props.exchanges.length < 1) {
-            //const traffic = await axios.get("http://localhost:8081/traffic");
-        }
-    }
+class TrafficTraceContainer extends React.Component<AllProps> {
+  constructor(props: AllProps) {
+      super(props);
+      this.state = initialState;
+  }
 
-    render() {
-        return (
-            <div>
-                <h1>Traffic trace container</h1>
-                <ul>
-                    {this.props.exchanges.map((exchange, index) => {
-                        return <HttpExchangeBox key={index} exchange={(exchange)} />;
-                    })}
-                </ul>
-            </div>
-        );
-    }
-};
+  componentDidMount() {
+    const {dispatch} = this.props;
+
+    dispatch(fetchRequest());
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Traffic trace container</h1>
+        <ul>
+          {this.props.exchanges && this.props.exchanges.map((exchange, index) => {
+            return <HttpExchangeBox key={index} exchange={exchange} />;
+          })}
+        </ul>
+      </div>
+    );
+  }
+}
 
 const mapStateToProps = (state: State) => ({
-    exchanges: state.exchanges
+  exchanges: state.exchanges
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
-    return {fetch: () => dispatch(fetch())};
+  return { fetchRequest: () => dispatch(fetchRequest()) };
 };
-  
-export const TrafficTraceContainerConnected = connect(mapStateToProps, mapDispatchToProps)(TrafficTraceContainer);
+
+export const TrafficTraceContainerConnected = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrafficTraceContainer);
