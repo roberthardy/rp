@@ -1,11 +1,13 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import {
   bindActionCreators,
   Reducer,
   Dispatch,
   AnyAction,
-  Action
+  Action,
+  ActionCreator
 } from "redux";
 import axios, { AxiosResponse } from "axios";
 import { RequestData, ResponseData, HttpExchange } from "../../common/models";
@@ -13,8 +15,8 @@ import { HttpExchangeBox } from "../components/HttpExchangeBox";
 import { action } from "typesafe-actions";
 
 // Additional props for connected React components. This prop is passed by default with `connect()`
-export interface ConnectedReduxProps<A extends Action = AnyAction> {
-  dispatch: Dispatch<A>;
+export interface ConnectedReduxProps {
+  dispatch: ThunkDispatch<State, void, AnyAction>;
 }
 
 export interface PropsFromState {
@@ -43,8 +45,8 @@ export const loadTraffic: Reducer<State> = (
   switch (action.type) {
     case "FETCH_REQUEST":
       return { ...state, isFetching: true };
-    case "FETCH_SUCESS":
-      return { ...state, exchanges: action.response, isFetching: false };
+    case "FETCH_SUCCESS":
+      return { ...state, exchanges: action.payload, isFetching: false };
     default:
       return state;
   }
@@ -55,25 +57,24 @@ export const fetchSuccess = (data: HttpExchange[]) =>
   action("FETCH_SUCCESS", data);
 
 export function fetchTraffic() {
-  return (dispatch:Dispatch) => {
+  return async (dispatch: Dispatch) => {
     dispatch(fetchRequest());
-    return axios
-      .get("http://localhost:8081/traffic")
-      .then(response => response.data)
-      .then(data => dispatch(fetchSuccess(data)));
+    const response = await axios.get("http://localhost:8081/traffic");
+    const data = response.data;
+    return dispatch(fetchSuccess(data));
   };
 }
 
 class TrafficTraceContainer extends React.Component<AllProps> {
   constructor(props: AllProps) {
-      super(props);
-      this.state = initialState;
+    super(props);
+    this.state = initialState;
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
 
-    dispatch(fetchRequest());
+    dispatch(fetchTraffic());
   }
 
   render() {
@@ -81,9 +82,10 @@ class TrafficTraceContainer extends React.Component<AllProps> {
       <div>
         <h1>Traffic trace container</h1>
         <ul>
-          {this.props.exchanges && this.props.exchanges.map((exchange, index) => {
-            return <HttpExchangeBox key={index} exchange={exchange} />;
-          })}
+          {this.props.exchanges &&
+            this.props.exchanges.map((exchange, index) => {
+              return <HttpExchangeBox key={index} exchange={exchange} />;
+            })}
         </ul>
       </div>
     );
