@@ -1,8 +1,8 @@
 import { action } from "typesafe-actions";
 import { TrafficApiActionTypes } from "../store/types"
 import { Dispatch } from "redux"
-import { RequestData, ResponseData, HttpExchange } from "../../common/models";
-import axios, { AxiosResponse } from "axios";
+import { HttpExchange } from "../../common/models";
+import axios from "axios";
 
 export const fetchRequest = () => action(TrafficApiActionTypes.FETCH_REQUEST);
 export const fetchSuccess = (data: HttpExchange[]) => action(TrafficApiActionTypes.FETCH_SUCCESS, data);
