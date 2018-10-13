@@ -43,6 +43,7 @@
     "awesome-typescript-loader": "^5.2.0",
     "concurrently": "^3.6.1",
     "connect": "^3.6.6",
+    "favicons-webpack-plugin": "0.0.9",
     "html-webpack-plugin": "^3.2.0",
     "nodemon": "^1.18.3",
     "redux-thunk": "^2.3.0",
