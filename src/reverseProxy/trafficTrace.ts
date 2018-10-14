@@ -10,10 +10,10 @@ interface IIdentifyable {
 class TrafficTrace {
     readonly middleware: HandleFunction;
     private currentIndex: number = 0;
-    traffic: HttpExchange[] = [];
+    readonly traffic: HttpExchange[] = [];
 
     constructor(target: string) {
-        let self = this;
+        const self = this;
 
         const proxy = httpProxy.createProxyServer({
             target: target,
@@ -22,17 +22,15 @@ class TrafficTrace {
 
         this.middleware = function (req: IncomingMessage & IIdentifyable, res: ServerResponse) {
 
-            let exchange : HttpExchange = new HttpExchange();
+            const exchange : HttpExchange = new HttpExchange();
         
-            let requestBodyBuffer : any[] = [];
-            req.on("data", (requestChunk: any) => {
-                requestBodyBuffer.push(requestChunk);
-            });
+            const requestBodyBuffer : any[] = [];
+            req.on("data", requestBodyBuffer.push);
             req.on("end", function() {
         
-                let requestBody = Buffer.concat(requestBodyBuffer);
+                const requestBody = Buffer.concat(requestBodyBuffer);
         
-                let requestData = onRequestReceived(req, requestBody);
+                const requestData = onRequestReceived(req, requestBody);
                 exchange.request = requestData;
         
                 req.index = self.currentIndex++;
@@ -43,12 +41,10 @@ class TrafficTrace {
         };
     
         proxy.on('proxyRes', function (proxyRes, req: IncomingMessage & IIdentifyable, res) {
-            var body: any[] = [];
-            proxyRes.on('data', function (data) {
-                body.push(data);
-            });
+            const body: any[] = [];
+            proxyRes.on('data', body.push);
             proxyRes.on('end', function () {
-                let responseBody = Buffer.concat(body);
+                const responseBody = Buffer.concat(body);
                 self.traffic[req.index].response = onResponseReceived(res, responseBody);
             });
         });
@@ -61,7 +57,7 @@ export function createTrace(target: string): TrafficTrace {
 
 function onRequestReceived(request: IncomingMessage, contentBuffer: Buffer) : RequestData {
 
-    let requestData : RequestData = {
+    const requestData : RequestData = {
         body : null,
         method : request.method,
         path : request.url
@@ -84,7 +80,7 @@ function onRequestReceived(request: IncomingMessage, contentBuffer: Buffer) : Re
 
 function onResponseReceived(response: ServerResponse, contentBuffer: Buffer) : ResponseData {
 
-    let responseData : ResponseData = {
+    const responseData : ResponseData = {
         body: null,
         status: response.statusCode
     };
