@@ -55,7 +55,7 @@ export function createTrace(target: string): TrafficTrace {
     return new TrafficTrace(target);
 }
 
-function onRequestReceived(request: IncomingMessage, contentBuffer: Buffer) : RequestData {
+export function onRequestReceived(request: IncomingMessage, requestBody: Buffer = null) : RequestData {
 
     const requestData : RequestData = {
         body : null,
@@ -63,30 +63,20 @@ function onRequestReceived(request: IncomingMessage, contentBuffer: Buffer) : Re
         path : request.url
     };
 
-    // Uncomment lines 18 to 24 and then comment out line 26 if you want parsed JSON object
-    // output to the console instead of raw text.
-    // if (contentBuffer && contentBuffer.length > 0) {
-    //     if (utils.isContentTypeJson(request.headers)) {
-    //         requestData.body = JSON.parse(contentBuffer.toString());
-    //     }
-    //     else {
-    //     }   
-    // }
-
-    requestData.body = contentBuffer.toString();
+    requestData.body = requestBody && requestBody.toString();
     
     return requestData;
 }
 
-function onResponseReceived(response: ServerResponse, contentBuffer: Buffer) : ResponseData {
+function onResponseReceived(response: ServerResponse, responseBody: Buffer) : ResponseData {
 
     const responseData : ResponseData = {
         body: null,
         status: response.statusCode
     };
 
-    if (contentBuffer && contentBuffer.length > 0) {
-        responseData.body = contentBuffer.toString();
+    if (responseBody && responseBody.length > 0) {
+        responseData.body = responseBody.toString();
     }
     return responseData;
 }

@@ -5,7 +5,8 @@
   "repository": "https://github.com/roberthardy/rp",
   "private": true,
   "scripts": {
-    "test": "npm run build-test && node dist/reverseProxy/test/traceTest.js",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "test-reverse-proxy": "npm run build-test && node dist/reverseProxy/test/traceTest.js",
     "start": "node dist/reverseProxy/server.js",
     "start-dev": "concurrently npm:watch-*",
     "watch-reverse-proxy": "nodemon -w dist --ignore dist/ui dist/reverseProxy/server.js -- -i",
@@ -14,7 +15,7 @@
     "echo-server": "npm run build-reverse-proxy && node dist/reverseProxy/test/echoServer.js",
     "build-reverse-proxy": "tsc --project src/reverseProxy",
     "build-inspector": "webpack",
-    "build-test": "npm run build-reverse-proxy"
+    "build-test-reverse-proxy": "npm run build-reverse-proxy"
   },
   "author": "",
   "license": "ISC",
@@ -30,10 +31,12 @@
     "redux-logger": "^3.0.6"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.6",
     "@types/connect": "^3.4.32",
     "@types/express": "^4.16.0",
     "@types/http-proxy": "^1.16.1",
     "@types/minimist": "^1.2.0",
+    "@types/mocha": "^5.2.5",
     "@types/node": "^8.0.53",
     "@types/react": "^16.4.7",
     "@types/react-dom": "^16.0.6",
@@ -41,12 +44,15 @@
     "@types/redux-logger": "^3.0.6",
     "@types/redux-thunk": "^2.1.0",
     "awesome-typescript-loader": "^5.2.0",
+    "chai": "^4.2.0",
     "concurrently": "^3.6.1",
     "connect": "^3.6.6",
     "favicons-webpack-plugin": "0.0.9",
     "html-webpack-plugin": "^3.2.0",
+    "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
     "redux-thunk": "^2.3.0",
+    "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "typesafe-actions": "^2.0.4",
     "typescript": "^3.0.1",
