@@ -31,7 +31,7 @@ export function launchEchoServer(echoServerPort: number) {
         
             if (parameters.t) {
                 res.setHeader('t', parameters.t);
-                setTimeout(returnResponse, parameters.t)
+                setTimeout(returnResponse, +parameters.t)
             }
             else {
                 returnResponse();
