@@ -69,11 +69,12 @@ export function onRequestReceived(request: IncomingMessage, requestBody: Buffer 
     return requestData;
 }
 
-function onResponseReceived(response: ServerResponse, responseBody: Buffer) : ResponseData {
+export function onResponseReceived(response: ServerResponse, responseBody: Buffer) : ResponseData {
 
     const responseData : ResponseData = {
         body: null,
-        status: response.statusCode
+        statusCode: response.statusCode,
+        headers: response.getHeaders()
     };
 
     if (responseBody && responseBody.length > 0) {

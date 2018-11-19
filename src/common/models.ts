@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders } from "http";
+import { IncomingHttpHeaders, OutgoingHttpHeaders } from "http";
 
 export interface RequestData {
     method: string;
@@ -8,8 +8,9 @@ export interface RequestData {
 }
 
 export interface ResponseData {
-    status: number;
+    statusCode: number;
     body: any;
+    headers: OutgoingHttpHeaders;
 }
 
 export class HttpExchange {
