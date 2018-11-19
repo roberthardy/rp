@@ -60,7 +60,8 @@ export function onRequestReceived(request: IncomingMessage, requestBody: Buffer 
     const requestData : RequestData = {
         body : null,
         method : request.method,
-        path : request.url
+        path : request.url,
+        headers : request.headers
     };
 
     requestData.body = requestBody && requestBody.toString();
