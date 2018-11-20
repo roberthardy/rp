@@ -45,12 +45,14 @@ class TrafficTraceContainer extends React.Component<AllProps> {
     return (
       <div>
         <h1>Traffic trace container</h1>
-        <ul>
-          {this.props.exchanges &&
-            this.props.exchanges.map((exchange, index) => {
-              return <HttpExchangeBox key={index} exchange={exchange} />;
-            })}
-        </ul>
+        <table>
+          <tbody>
+            {this.props.exchanges &&
+              this.props.exchanges.map((exchange, index) => {
+                return <HttpExchangeBox key={index} exchange={exchange} />;
+              })}
+          </tbody>
+        </table>
       </div>
     );
   }

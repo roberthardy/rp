@@ -11,6 +11,6 @@ export class HttpExchangeBox extends React.Component<Props> {
   }
 
   render() {
-    return <li>{this.props.exchange.request.path}</li>;
+    return <tr><td>{this.props.exchange.request.path}</td></tr>;
   }
 }
