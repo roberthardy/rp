@@ -6,12 +6,13 @@ import thunk from "redux-thunk";
 import { TrafficTraceContainerConnected } from "./containers/TrafficTraceContainer";
 import { loadTraffic } from "./store/reducer";
 import { createLogger } from "redux-logger";
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 const loggerMiddleware = createLogger();
 const store = createStore(
   loadTraffic,
   {},
-  applyMiddleware(thunk, loggerMiddleware)
+  composeWithDevTools(applyMiddleware(thunk, loggerMiddleware))
 );
 
 render(
