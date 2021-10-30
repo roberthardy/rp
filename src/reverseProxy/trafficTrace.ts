@@ -46,6 +46,9 @@ class TrafficTrace {
             proxyRes.on('end', function () {
                 const responseBody = Buffer.concat(body);
                 self.traffic[req.index].response = onResponseReceived(res, responseBody);
+
+                console.log(self.traffic[req.index].response)
+
             });
         });
     }
